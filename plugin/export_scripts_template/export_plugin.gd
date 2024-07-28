@@ -18,7 +18,7 @@ func _exit_tree():
 
 class AndroidExportPlugin extends EditorExportPlugin:
 	# TODO: Update to your plugin's name.
-	var _plugin_name = "GDExtensionAndroidPluginTemplate"
+	var _plugin_name = "ARCorePlugin"
 
 	func _supports_platform(platform):
 		if platform is EditorExportPlatformAndroid:

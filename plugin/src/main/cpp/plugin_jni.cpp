@@ -6,7 +6,7 @@
 
 #undef JNI_PACKAGE_NAME
 // TODO: Update to match plugin's package name
-#define JNI_PACKAGE_NAME org_godotengine_plugin_android_gdextension_template
+#define JNI_PACKAGE_NAME org_godotengine_plugin_android_arcore
 
 #undef JNI_CLASS_NAME
 #define JNI_CLASS_NAME GDExtensionAndroidPlugin

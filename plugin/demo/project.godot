@@ -19,6 +19,16 @@ config/icon="res://icon.svg"
 
 settings/stdout/verbose_stdout=true
 
+[display]
+
+window/size/viewport_width=1800
+window/size/viewport_height=2400
+window/handheld/orientation=1
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/ARCorePlugin/plugin.cfg")
+
 [rendering]
 
 renderer/rendering_method="gl_compatibility"
