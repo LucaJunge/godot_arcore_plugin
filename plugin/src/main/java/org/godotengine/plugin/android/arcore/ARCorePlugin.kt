@@ -6,10 +6,18 @@ import org.godotengine.godot.Godot
 import org.godotengine.godot.plugin.GodotPlugin
 import org.godotengine.godot.plugin.UsedByGodot
 
-class GDExtensionAndroidPlugin(godot: Godot): GodotPlugin(godot) {
+import com.google.ar.core.ArCoreApk
+import android.app.Activity
+import android.view.View
+import android.widget.TextView
+import android.content.Intent
+import android.content.Context
+
+
+class ARCorePlugin(godot: Godot): GodotPlugin(godot) {
 
     companion object {
-        val TAG = GDExtensionAndroidPlugin::class.java.simpleName
+        val TAG = ARCorePlugin::class.java.simpleName
 
         init {
             try {
@@ -19,6 +27,32 @@ class GDExtensionAndroidPlugin(godot: Godot): GodotPlugin(godot) {
                 Log.e(TAG, "Unable to load ${BuildConfig.GODOT_PLUGIN_NAME} shared library")
             }
         }
+    }   
+
+    override fun onMainCreate(activity: Activity): View {
+        Log.v(ARCorePlugin::class.java.simpleName, "OnMainCreate")
+        //super.onCreate(activity)
+
+         val textView = TextView(activity).apply {
+            text = "Hello, ARCore!"
+            textSize = 20f
+        }
+
+        setupARCore(activity, activity.getIntent())
+
+        return textView
+    }
+
+    fun setupARCore(activity: Activity, intent: Intent) {
+        Log.v(ARCorePlugin::class.java.simpleName, "setupARCore")
+        ArCoreApk.getInstance().checkAvailabilityAsync(activity.getApplicationContext()) {
+            availability -> if(availability.isSupported) {
+                Log.v(ARCorePlugin::class.java.simpleName, "is supported")
+            } else {
+                Log.v(ARCorePlugin::class.java.simpleName, "is NOT supported")
+            }
+        }
+       
     }
 
     override fun getPluginName() = BuildConfig.GODOT_PLUGIN_NAME
@@ -32,5 +66,5 @@ class GDExtensionAndroidPlugin(godot: Godot): GodotPlugin(godot) {
      * Print a 'Hello World' message to the logcat.
      */
     @UsedByGodot
-    private external fun helloWorld()
+    private external fun helloWorld()   
 }

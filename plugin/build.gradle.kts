@@ -32,7 +32,8 @@ android {
 
         externalNativeBuild {
             cmake {
-                cppFlags("")
+                cppFlags("-std=c++17", "-Wall")
+                arguments("-DARCORE_INCLUDE=${project.rootDir}/cpp/include")
             }
         }
         ndk {
@@ -62,6 +63,7 @@ android {
 
 dependencies {
     implementation("org.godotengine:godot:4.2.0.stable")
+    implementation("com.google.ar:core:1.44.0")
 }
 
 // BUILD TASKS DEFINITION
