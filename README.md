@@ -83,6 +83,19 @@ will be used for compilation by the plugin.
 - On successful completion of the build, the output files can be found in
   [`plugin/demo/addons`](plugin/demo/addons)
 
+### Building the configured Android plugin with Android Studio
+- Open Android Studio and Click on `Open...` navigate to the git repo and click on `godot_arcore_plugin` where the android robot shows up and wait for Android Studio to finish loading
+
+- In the top bar click on `Add Configuration...` and then `Edit Configurations...`
+
+- For the development you can create two configurations, one for building the project and one for cleaning the output folders:
+
+- Click on the `+` sign and choose "Gradle" as the type for the configuration
+
+- In the window to the right give the configuration a name - *`build` in this case* - and under "Run" type `assemble`, which corresponds to the command `./gradlew assemble` which you would do in the command line
+
+- You can repeat the steps for the gradle task `clean` if you want
+
 ### Testing the Android plugin
 You can use the included [Godot demo project](plugin/demo/project.godot) to test the built Android 
 plugin
@@ -136,3 +149,15 @@ users from writing code that accesses the plugin from within the Godot Editor.
 This may involve creating dummy plugins for the host OS just so the API is published to the 
 editor. You can use the [godot-cpp-template](https://github.com/godotengine/godot-cpp-template) 
 github template for reference on how to do so.
+
+## Gotchas
+
+Currently, the gradlew script has Windows-style line endings which stops the script from executing under Linux.
+
+To fix that, navigate to the folder where the `gradlew` script is and enter the following command:
+
+```sh
+dos2unix ./gradlew
+```
+
+This will convert the line endings to LF.

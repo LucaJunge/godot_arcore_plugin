@@ -16,5 +16,6 @@
 extern "C" {
     JNIEXPORT void JNICALL JNI_METHOD(helloWorld)(JNIEnv *env, jobject) {
         godot::UtilityFunctions::print("Hello GDExtension World!");
+        godot::UtilityFunctions::print("This was built from Android Studio!");
     }   
 };

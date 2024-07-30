@@ -6,19 +6,16 @@ import org.godotengine.godot.Godot
 import org.godotengine.godot.plugin.GodotPlugin
 import org.godotengine.godot.plugin.UsedByGodot
 
-import com.google.ar.core.ArCoreApk
 import android.app.Activity
 import android.view.View
 import android.widget.TextView
 import android.content.Intent
-import android.content.Context
-
 
 class ARCorePlugin(godot: Godot): GodotPlugin(godot) {
 
     companion object {
         val TAG = ARCorePlugin::class.java.simpleName
-
+            
         init {
             try {
                 Log.v(TAG, "Loading ${BuildConfig.GODOT_PLUGIN_NAME} library")
@@ -27,7 +24,7 @@ class ARCorePlugin(godot: Godot): GodotPlugin(godot) {
                 Log.e(TAG, "Unable to load ${BuildConfig.GODOT_PLUGIN_NAME} shared library")
             }
         }
-    }   
+    }
 
     override fun onMainCreate(activity: Activity): View {
         Log.v(ARCorePlugin::class.java.simpleName, "OnMainCreate")
@@ -38,21 +35,13 @@ class ARCorePlugin(godot: Godot): GodotPlugin(godot) {
             textSize = 20f
         }
 
-        setupARCore(activity, activity.getIntent())
+        //setupARCore(activity, activity.getIntent())
 
         return textView
     }
 
     fun setupARCore(activity: Activity, intent: Intent) {
         Log.v(ARCorePlugin::class.java.simpleName, "setupARCore")
-        ArCoreApk.getInstance().checkAvailabilityAsync(activity.getApplicationContext()) {
-            availability -> if(availability.isSupported) {
-                Log.v(ARCorePlugin::class.java.simpleName, "is supported")
-            } else {
-                Log.v(ARCorePlugin::class.java.simpleName, "is NOT supported")
-            }
-        }
-       
     }
 
     override fun getPluginName() = BuildConfig.GODOT_PLUGIN_NAME
