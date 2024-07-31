@@ -93,6 +93,12 @@ else ()
     set(GODOT_COMPILE_FLAGS "${GODOT_COMPILE_FLAGS} -O3")
 endif (CMAKE_BUILD_TYPE MATCHES Debug)
 
+# Import the ARCore library.
+#add_library(arcore SHARED IMPORTED)
+#set_target_properties(arcore PROPERTIES IMPORTED_LOCATION
+#              ${ARCORE_LIBPATH}/${ANDROID_ABI}/libarcore_sdk_c.so
+#              INTERFACE_INCLUDE_DIRECTORIES ${ARCORE_INCLUDE}
+#)
 
 ## godot-cpp library
 set(GODOT_CPP_DIR "${CMAKE_SOURCE_DIR}/../godot-cpp")
@@ -133,6 +139,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
         # List libraries link to the target library
         android
         log
+        #arcore
         ${GODOT-CPP}
         )
 

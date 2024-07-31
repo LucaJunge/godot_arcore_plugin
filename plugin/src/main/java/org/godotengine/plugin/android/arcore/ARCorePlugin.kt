@@ -8,8 +8,7 @@ import org.godotengine.godot.plugin.UsedByGodot
 
 import android.app.Activity
 import android.view.View
-import android.widget.TextView
-import android.content.Intent
+import com.google.ar.core.ArCoreApk
 
 class ARCorePlugin(godot: Godot): GodotPlugin(godot) {
 
@@ -26,22 +25,10 @@ class ARCorePlugin(godot: Godot): GodotPlugin(godot) {
         }
     }
 
-    override fun onMainCreate(activity: Activity): View {
-        Log.v(ARCorePlugin::class.java.simpleName, "OnMainCreate")
-        //super.onCreate(activity)
-
-         val textView = TextView(activity).apply {
-            text = "Hello, ARCore!"
-            textSize = 20f
-        }
-
-        //setupARCore(activity, activity.getIntent())
-
-        return textView
-    }
-
-    fun setupARCore(activity: Activity, intent: Intent) {
-        Log.v(ARCorePlugin::class.java.simpleName, "setupARCore")
+    override fun onMainCreate(activity: Activity): View? {
+        val apk = ArCoreApk.getInstance()
+        Log.v(TAG, "ARCoreApk instance: $apk")
+        return null
     }
 
     override fun getPluginName() = BuildConfig.GODOT_PLUGIN_NAME
