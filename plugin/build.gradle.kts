@@ -82,6 +82,10 @@ android {
 dependencies {
     implementation("org.godotengine:godot:4.2.0.stable")
     implementation("com.google.ar:core:1.44.0")
+    implementation("androidx.activity:activity-ktx:1.2.0-alpha04")
+    implementation("androidx.appcompat:appcompat:1.4.0")
+    implementation("androidx.fragment:fragment-ktx:1.3.0")
+    implementation("androidx.core:core-ktx:1.3.1")
     natives("com.google.ar:core:1.44.0")
 }
 
@@ -176,6 +180,5 @@ tasks.register<Copy>("extractNativeLibraries") {
 tasks.whenTaskAdded {
     if (name.contains("external", ignoreCase = true) && !name.contains("Clean", ignoreCase = true)) {
         dependsOn(tasks.named("extractNativeLibraries"))
-        //logger.lifecycle("extractNativeLibraries!!!!!")
     }
 }

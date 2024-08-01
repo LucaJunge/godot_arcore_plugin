@@ -33,9 +33,9 @@ class AndroidExportPlugin extends EditorExportPlugin:
 
 	func _get_android_dependencies(platform, debug):
 		if debug:
-			return PackedStringArray(["com.google.ar:core:1.44.0"])
+			return PackedStringArray(["com.google.ar:core:1.44.0", "androidx.appcompat:appcompat:1.4.0"])
 		else:
-			return PackedStringArray(["com.google.ar:core:1.44.0"])
+			return PackedStringArray(["com.google.ar:core:1.44.0", "androidx.appcompat:appcompat:1.4.0"])
 
 	func _get_name():
 		return _plugin_name
