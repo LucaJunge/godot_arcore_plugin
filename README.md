@@ -1,6 +1,7 @@
 # GDExtension Android Plugin Template
-This repository serves as a quickstart template for building a GDExtension Android plugin for Godot 
-4.2+.
+Current Error message:
+
+![Current error](./error.png)
 
 ## Contents
 * [godot-cpp](godot-cpp) submodule for the GDExtension C++ bindings
