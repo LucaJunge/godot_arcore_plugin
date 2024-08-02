@@ -24,6 +24,7 @@ import com.google.ar.core.exceptions.CameraNotAvailableException
 import com.google.ar.core.exceptions.TextureNotSetException
 import com.google.ar.core.exceptions.UnavailableDeviceNotCompatibleException
 import com.google.ar.core.exceptions.UnavailableUserDeclinedInstallationException
+import org.godotengine.godot.Dictionary
 import org.godotengine.godot.Godot
 import org.godotengine.godot.gl.GLSurfaceView
 import org.godotengine.godot.gl.GodotRenderer
@@ -54,6 +55,7 @@ class ARCorePlugin(godot: Godot): GodotPlugin(godot) {
         private var viewportWidth: Int = -1
         private var viewportHeight: Int = -1
         private var viewportChanged: Boolean = false
+        var nearestHit: HitResult? = null
 
         init {
             try {
@@ -255,10 +257,10 @@ class ARCorePlugin(godot: Godot): GodotPlugin(godot) {
             var hitResultList: List<HitResult>  = frame.hitTest(100.0F, 100.0F)
 
             if(hitResultList.isNotEmpty()) {
-                var nearestHit = hitResultList[0]
+                nearestHit = hitResultList[0]
 
-                var distanceToCamera: Float = nearestHit.distance
-                var pose: Pose = nearestHit.hitPose
+                var distanceToCamera: Float = nearestHit!!.distance
+                var pose: Pose = nearestHit!!.hitPose
                 Log.v(TAG, "Distance from camera to hit: $distanceToCamera")
                 Log.v(TAG, "Pose of the hit: $pose")
             }
@@ -287,5 +289,38 @@ class ARCorePlugin(godot: Godot): GodotPlugin(godot) {
      * Print a 'Hello World' message to the logcat.
      */
     @UsedByGodot
-    private external fun helloWorld()   
+    private external fun helloWorld()
+
+    @UsedByGodot
+    private fun getHitResult(): Dictionary {
+        var dictionary = Dictionary()
+        dictionary.put("keyhere", floatArrayOf(0.2f, 0.3f, 0.5f))
+        return dictionary
+    }
+
+    @UsedByGodot
+    //
+    private fun getHitResultsArray(): Dictionary {
+        if(nearestHit != null) {
+            var dictionary = Dictionary()
+            dictionary["tx"] = nearestHit!!.hitPose.tx()
+            dictionary["ty"] = nearestHit!!.hitPose.ty()
+            dictionary["tz"] = nearestHit!!.hitPose.tz()
+            dictionary["qx"] = nearestHit!!.hitPose.qx()
+            dictionary["qy"] = nearestHit!!.hitPose.qy()
+            dictionary["qz"] = nearestHit!!.hitPose.qz()
+            dictionary["qw"] = nearestHit!!.hitPose.qw()
+            return dictionary
+        } else {
+            var dictionary = Dictionary()
+            dictionary["tx"] = 0
+            dictionary["ty"] = 0
+            dictionary["tz"] = 0
+            dictionary["qx"] = 0
+            dictionary["qy"] = 0
+            dictionary["qz"] = 0
+            dictionary["qw"] = 0
+            return dictionary
+        }
+    }
 }

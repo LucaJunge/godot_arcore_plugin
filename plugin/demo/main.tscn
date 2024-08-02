@@ -1,17 +1,36 @@
-[gd_scene load_steps=2 format=3 uid="uid://cg3hylang5fxn"]
+[gd_scene load_steps=7 format=3 uid="uid://cg3hylang5fxn"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_j0gfq"]
 
-[node name="Main" type="CenterContainer"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_f8c6f"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_rb1mk"]
+sky_material = SubResource("ProceduralSkyMaterial_f8c6f")
+
+[sub_resource type="Environment" id="Environment_o56th"]
+background_mode = 2
+sky = SubResource("Sky_rb1mk")
+tonemap_mode = 2
+
+[sub_resource type="BoxMesh" id="BoxMesh_1mv4k"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8irfb"]
+
+[node name="Main" type="Node3D"]
 script = ExtResource("1_j0gfq")
 
-[node name="Button" type="Button" parent="."]
-layout_mode = 2
-text = "Hello GDExtension World"
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_o56th")
 
-[connection signal="pressed" from="Button" to="." method="_on_Button_pressed"]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
+
+[node name="CSGMesh3D" type="CSGMesh3D" parent="."]
+mesh = SubResource("BoxMesh_1mv4k")
+material = SubResource("StandardMaterial3D_8irfb")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.20032, 4.98909)
