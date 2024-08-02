@@ -259,7 +259,7 @@ class ARCorePlugin(godot: Godot): GodotPlugin(godot) {
 
                 var distanceToCamera: Float = nearestHit.distance
                 var pose: Pose = nearestHit.hitPose
-                Log.v(TAG, "Distance from camera to hit: $nearestHit")
+                Log.v(TAG, "Distance from camera to hit: $distanceToCamera")
                 Log.v(TAG, "Pose of the hit: $pose")
             }
 
