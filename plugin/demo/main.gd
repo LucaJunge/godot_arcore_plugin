@@ -1,6 +1,7 @@
 extends Node3D
 
-@onready var csgMesh: CSGMesh3D = $CSGMesh3D
+@onready var csgMesh : CSGMesh3D = $CSGMesh3D
+@onready var camera : Camera3D = $Camera3D
 
 # TODO: Update to match your plugin's name
 var _plugin_name = "ARCorePlugin"
@@ -25,4 +26,9 @@ func _process(delta):
 		csgMesh.position.x = hitResultDictionary["tx"]
 		csgMesh.position.y = hitResultDictionary["ty"]
 		csgMesh.position.z = hitResultDictionary["tz"]
+		csgMesh.quaternion.x = hitResultDictionary["qx"]
+		csgMesh.quaternion.y = hitResultDictionary["qy"]
+		csgMesh.quaternion.z = hitResultDictionary["qz"]
+		csgMesh.quaternion.w = hitResultDictionary["qw"]
+		
 
