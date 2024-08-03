@@ -56,6 +56,34 @@ You can use the included [Godot demo project](plugin/demo/project.godot) to test
   your plugin and its methods
 - Connect an Android device to your machine and run the demo on it
 
+### Testing the Android Plugin with the Android Studio Device Emulator
+
+Follow the installation in [Run AR Apps in Android Emulator](https://developers.google.com/ar/develop/java/emulator) and create a device
+
+For the Android plugin and the resulting app to compile you have to add x86 ABIs to your setup. That means compiling godot-cpp for x86_32 and x86_64 and making some changes to the build.gradle.kts file of the plugin:
+
+Add these lines to you `plugin/build.gradle.kts`:
+```gradle
+ndk {
+	abiFilters.add("arm64-v8a")
+	abiFilters.add("x86")
+	abiFilters.add("x86_64")
+}
+```
+
+To compile godot-cpp for the two architectures, navigate to the `godot-cpp` submodule and build it. See [Building the C++ bindings](https://docs.godotengine.org/en/stable/tutorials/scripting/gdextension/gdextension_cpp_example.html#building-the-c-bindings) for details.
+
+```bash
+cd godot-cpp
+scons platform=android target=template_debug arch=x86_32
+scons platform=android target=template_debug arch=x86_64
+scons platform=android target=template_release arch=x86_32
+scons platform=android target=template_release arch=x86_64
+```
+
+When exporting the Godot app with the plugin enabled, don't forget to add the architectures to your build.  
+Open your project in the Godot Engine, navigate to `Project` -> `Export...` click on your Android Preset and under "Architectures" enable both `x86` and `x86_64`
+
 #### Tips
 
 ##### Simplify access to the exposed Java / Kotlin APIs
