@@ -11,16 +11,6 @@ val pluginName = "ARCorePlugin"
 // TODO: Update value to match your plugin's package name.
 val pluginPackageName = "org.godotengine.plugin.android.arcore"
 
-/*
-The ARCore AAR library contains native shared libraries that are
-extracted before building to a temporary directory.
-*/
-val arcore_libpath = "${buildDir}/arcore-native"
-
-// Create a configuration to mark which aars to extract .so files from
-//configurations.create("natives")
-val natives: Configuration by configurations.creating
-
 /**
  * Flag used to specify whether the `plugin.gdextension` config file has libraries for platforms
  * other than Android and can be used by the Godot Editor
@@ -37,19 +27,18 @@ android {
         buildConfig = true
     }
 
-    packagingOptions {
-        jniLibs.keepDebugSymbols.add("**/*.so")
-    }
-
     defaultConfig {
         minSdk = 24
+        ndkVersion = "23.2.8568313"
+        buildToolsVersion = "33.0.2"
+        version = 1.0
 
         externalNativeBuild {
             cmake {
                 cppFlags("-std=c++17", "-Wall")
-                arguments("-DANDROID_STL=c++_static",
-                        "-DARCORE_LIBPATH=${arcore_libpath}/jni",
-                        "-DARCORE_INCLUDE=${project.rootDir}/plugin/src/main/cpp/include")
+                //arguments("-DANDROID_STL=c++_static",
+                //        "-DARCORE_LIBPATH=${arcore_libpath}/jni",
+                //        "-DARCORE_INCLUDE=${project.rootDir}/plugin/src/main/cpp/include")
             }
         }
         ndk {
@@ -66,7 +55,7 @@ android {
     }
     externalNativeBuild {
         cmake {
-            path("CMakeLists.txt")
+            path = file("CMakeLists.txt")
             version = "3.22.1"
         }
     }
@@ -78,9 +67,9 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
-    ndkVersion = "23.2.8568313"
-    buildToolsVersion = "33.0.2"
 }
+
+val arcoreLibpath = file("${buildDir}/arcore-native")
 
 dependencies {
     implementation("org.godotengine:godot:4.2.0.stable")
@@ -89,10 +78,34 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.4.0")
     implementation("androidx.fragment:fragment-ktx:1.3.0")
     implementation("androidx.core:core-ktx:1.3.1")
-    natives("com.google.ar:core:1.44.0")
+
+    configurations {
+        create("arcoreImplementation")
+    }
+    "arcoreImplementation" ("com.google.ar:core:1.44.0")
+    implementation(fileTree("./build/arcore-native") {
+        include("classes.jar")
+    })
 }
 
 // BUILD TASKS DEFINITION
+
+// Task to extract .so files from ARCore AAR
+val extractNativeLibs by tasks.registering(Copy::class) {
+    dependsOn(configurations.getByName("arcoreImplementation"))
+
+    from(configurations.getByName("arcoreImplementation").map {
+        zipTree(it)
+    })
+
+    into(arcoreLibpath)
+}
+
+// Hook extractNativeLibs task to the build process
+tasks.named("preBuild") {
+    dependsOn(tasks.getByName("extractNativeLibs"))
+}
+
 val cleanAssetsAddons by tasks.registering(Copy::class) {
     delete("src/main/assets/addons")
 }
@@ -165,23 +178,4 @@ tasks.named<Delete>("clean").apply {
     dependsOn(cleanDemoAddons)
     dependsOn(cleanAssetsAddons)
 }
-
-// ARCore NDK requirements
-tasks.register<Copy>("extractNativeLibraries") {
-    outputs.upToDateWhen { false }
-
-    doFirst {
-        configurations.getByName("natives").files.forEach { file ->
-            logger.lifecycle("in config")
-            from(zipTree(file))
-            into(arcore_libpath)
-            include("jni/**/*")
-        }
-    }
-}
-
-tasks.whenTaskAdded {
-    if (name.contains("external", ignoreCase = true) && !name.contains("Clean", ignoreCase = true)) {
-        dependsOn(tasks.named("extractNativeLibraries"))
-    }
-}
+ 
