@@ -3,18 +3,13 @@ package org.godotengine.plugin.android.arcore
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
-import android.view.Choreographer
-import android.view.Display
 import android.view.View
-import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.ar.core.ArCoreApk
-import com.google.ar.core.Camera
 import com.google.ar.core.Config
 import com.google.ar.core.Frame
 import com.google.ar.core.HitResult
@@ -215,7 +210,7 @@ class ARCorePlugin(godot: Godot): GodotPlugin(godot) {
     override fun onGLSurfaceCreated(gl: GL10?, config: EGLConfig?) {
         super.onGLSurfaceCreated(gl, config)
         textureBuffer = IntBuffer.wrap(intArrayOf(100*100))
-        gl!!.glGenTextures(1, textureBuffer )
+        gl!!.glGenTextures(1, textureBuffer)
         gl.glBindTexture(GL10.GL_TEXTURE_2D, cameraTextureId)
     }
 
@@ -287,5 +282,11 @@ class ARCorePlugin(godot: Godot): GodotPlugin(godot) {
      * Print a 'Hello World' message to the logcat.
      */
     @UsedByGodot
-    private external fun helloWorld()   
+    private external fun helloWorld()
+
+    @UsedByGodot
+    private external initializeWrapper()
+
+    @UsedByGodot
+    private external uninitializeWrapper()
 }
