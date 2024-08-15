@@ -1,20 +1,12 @@
 // TODO: Update to match your plugin's package name.
 package org.godotengine.plugin.android.arcore
 
-import android.Manifest
 import android.app.Activity
-import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
-import android.view.Choreographer
-import android.view.Display
 import android.view.View
-import android.view.WindowManager
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.google.ar.core.ArCoreApk
-import com.google.ar.core.Camera
 import com.google.ar.core.Config
 import com.google.ar.core.Frame
 import com.google.ar.core.HitResult
@@ -29,23 +21,17 @@ import org.godotengine.godot.gl.GLSurfaceView
 import org.godotengine.godot.gl.GodotRenderer
 import org.godotengine.godot.plugin.GodotPlugin
 import org.godotengine.godot.plugin.UsedByGodot
+import org.godotengine.godot.utils.PermissionsUtil
 import java.nio.IntBuffer
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
 class ARCorePlugin(godot: Godot): GodotPlugin(godot) {
 
-    /**
-     * The surfaceView is passed to the Sample Renderer in HelloArActivity.java...
-     * We need to call setRenderer (and pass a renderer?)
-     * Change the pixel format?
-     * For now: setRenderMode to on-demand?
-     */
-
     companion object {
         val TAG = ARCorePlugin::class.java.simpleName
+
         var requestARCoreInstall: Boolean = false
-        const val CAMERA_REQUEST_CODE: Int = 100
         var session : Session? = null
         private var surfaceView: GLSurfaceView? = null
         private var hasSetTextureNames: Boolean = false
@@ -65,21 +51,15 @@ class ARCorePlugin(godot: Godot): GodotPlugin(godot) {
         }
     }
 
-    override fun onMainCreate(activity: Activity?): View? {
+    override fun onMainCreate(activity: Activity): View? {
         super.onMainCreate(activity)
+        PermissionsUtil.requestManifestPermissions(activity)
+
         //windowManager = activity!!.getSystemService(Context.WINDOW_SERVICE) as WindowManager?
         surfaceView = GLSurfaceView(activity)
         // I need to give a GLSurfaceView.Renderer and somehow, implementing the interface
         // in an own class does not seem to be accepted...
         surfaceView!!.setRenderer(GodotRenderer())
-
-        // Check if all requirements for installation are met => (XR mode), Camera access and ARCore support
-        if(arCoreRequirementsSatisfied()) {
-            startARCore()
-        } else {
-            // This currently executes directly, it doesn't wait for arCoreRequirementsSatisfied()
-            Toast.makeText(activity, "Please accept the camera permission for ARCore to work", Toast.LENGTH_LONG).show()
-        }
 
         return null
     }
@@ -130,42 +110,12 @@ class ARCorePlugin(godot: Godot): GodotPlugin(godot) {
         super.onMainDestroy()
     }
 
-    private fun arCoreRequirementsSatisfied(): Boolean {
-        // From old plugin: do we still need this mode check?
-        /*if(XRMode.ARCORE != xrMode) {
-         * return false
-        }*/
-
-        when {
-            ContextCompat.checkSelfPermission(activity!!, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED -> {
-                // You can use the API that requires the permission
-            }
-            ActivityCompat.shouldShowRequestPermissionRationale(activity!!, Manifest.permission.CAMERA) -> {
-                Toast.makeText(activity, "You need to install ARCore to use this app.", Toast.LENGTH_LONG).show()
-            }
-            else -> {
-                // You can directly ask for the permission
-                ActivityCompat.requestPermissions(activity!!, arrayOf(Manifest.permission.CAMERA), CAMERA_REQUEST_CODE)
-            }
-        }
-
-        if(!hasCameraPermission(activity)) {
-            return false
-        }
-
-        // ToDo: also handle the other cases like ArCoreApk.Availability.SUPPORTED_APK_TOO_OLD
-        // Assuming up-to-date and installed ARCore for now
-        if(ArCoreApk.getInstance().checkAvailability(activity) != ArCoreApk.Availability.SUPPORTED_INSTALLED) {
-            return false
-        }
-
-        return true
-    }
-
     fun startARCore() {
     Log.v(TAG, "in startARCore")
-        // Create a session to use
-        session = createSession()
+        if(session == null) {
+            // Create a session to use
+            session = createSession()
+        }
     }
 
     override fun onMainRequestPermissionsResult(
@@ -174,23 +124,13 @@ class ARCorePlugin(godot: Godot): GodotPlugin(godot) {
         grantResults: IntArray?
     ) {
         super.onMainRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            CAMERA_REQUEST_CODE -> {
-                if(grantResults!!.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    Log.v(TAG, "ARCore: Camera permission was granted")
-                    // Permission is granted. Continue the action or workflow in your app
-                    // TODO: How to correctly continue the workflow here? For now just starting ARCore
-                    startARCore()
-                }
-            } else -> {
-                Toast.makeText(activity, "This app requires the Camera permission to work", Toast.LENGTH_LONG).show()
-            }
-        }
-    }
+        //Log.v(TAG, requestCode.toString()) // "1001" -> comes from PermissionUtil
 
-    private fun hasCameraPermission(activity: Activity?): Boolean {
-        return (ContextCompat.checkSelfPermission(activity!!, Manifest.permission.CAMERA)
-                == PackageManager.PERMISSION_GRANTED)
+        permissions?.forEachIndexed { index, permission ->
+            Log.v(TAG, "ARCorePlugin: Permission ${permission} is ${if (grantResults?.get(index) == PackageManager.PERMISSION_GRANTED) "granted" else "not granted"}")
+            // We only have one permission (CAMERA) in the manifest, start ARCore if it is granted...
+            startARCore()
+        }
     }
 
     // Creates a session and configures it (https://developers.google.com/ar/develop/java/session-config)
