@@ -93,13 +93,6 @@ else ()
     set(GODOT_COMPILE_FLAGS "${GODOT_COMPILE_FLAGS} -O3")
 endif (CMAKE_BUILD_TYPE MATCHES Debug)
 
-# Import the ARCore library.
-#add_library(arcore SHARED IMPORTED)
-#set_target_properties(arcore PROPERTIES IMPORTED_LOCATION
-#              ${ARCORE_LIBPATH}/${ANDROID_ABI}/libarcore_sdk_c.so
-#              INTERFACE_INCLUDE_DIRECTORIES ${ARCORE_INCLUDE}
-#)
-
 ## godot-cpp library
 set(GODOT_CPP_DIR "${CMAKE_SOURCE_DIR}/../godot-cpp")
 set(GODOT-CPP "godot-cpp")
@@ -125,12 +118,22 @@ file(GLOB_RECURSE ANDROID_HEADERS ${CMAKE_SOURCE_DIR}/src/main/cpp/*.h**)
 
 add_library(${CMAKE_PROJECT_NAME} SHARED
         ${ANDROID_SOURCES} ${ANDROID_HEADERS}
-        )
+)
+
+# Specify path to ARCore's native libraries in the build folder
+set(ARCORE_LIB_DIR ${CMAKE_SOURCE_DIR}/build/arcore-native/jni/arm64-v8a)
+
+# Include ARCore
+add_library(arcore_sdk_c SHARED IMPORTED)
+set_target_properties(arcore_sdk_c PROPERTIES IMPORTED_LOCATION ${ARCORE_LIB_DIR}/libarcore_sdk_c.so)
+
+add_library(arcore_sdk_jni SHARED IMPORTED)
+set_target_properties(arcore_sdk_jni PROPERTIES IMPORTED_LOCATION ${ARCORE_LIB_DIR}/libarcore_sdk_jni.so)
 
 target_include_directories(${CMAKE_PROJECT_NAME}
         SYSTEM PUBLIC
         ${GODOT_CPP_INCLUDE_DIRECTORIES}
-        )
+)
 
 # Specifies libraries CMake should link to your target library. You
 # can link libraries from various origins, such as libraries defined in this
@@ -138,8 +141,10 @@ target_include_directories(${CMAKE_PROJECT_NAME}
 target_link_libraries(${CMAKE_PROJECT_NAME}
         # List libraries link to the target library
         android
+        # Add the ARCore dependencies here
+        arcore_sdk_c
+        arcore_sdk_jni
         log
-        #arcore
         ${GODOT-CPP}
         )
 

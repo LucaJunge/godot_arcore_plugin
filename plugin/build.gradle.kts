@@ -15,11 +15,7 @@ val pluginPackageName = "org.godotengine.plugin.android.arcore"
 The ARCore AAR library contains native shared libraries that are
 extracted before building to a temporary directory.
 */
-val arcore_libpath = "${buildDir}/arcore-native"
-
-// Create a configuration to mark which aars to extract .so files from
-//configurations.create("natives")
-val natives: Configuration by configurations.creating
+val arcoreLibpath = "${buildDir}/arcore-native"
 
 /**
  * Flag used to specify whether the `plugin.gdextension` config file has libraries for platforms
@@ -47,9 +43,7 @@ android {
         externalNativeBuild {
             cmake {
                 cppFlags("-std=c++17", "-Wall")
-                arguments("-DANDROID_STL=c++_static",
-                        "-DARCORE_LIBPATH=${arcore_libpath}/jni",
-                        "-DARCORE_INCLUDE=${project.rootDir}/plugin/src/main/cpp/include")
+                arguments("-DANDROID_STL=c++_static")
             }
         }
         ndk {
@@ -85,14 +79,28 @@ android {
 dependencies {
     implementation("org.godotengine:godot:4.2.0.stable")
     implementation("com.google.ar:core:1.44.0")
+    configurations.create("arcoreImplementation")
+    "arcoreImplementation" ("com.google.ar:core:1.44.0")
     implementation("androidx.activity:activity-ktx:1.2.0-alpha04")
     implementation("androidx.appcompat:appcompat:1.4.0")
     implementation("androidx.fragment:fragment-ktx:1.3.0")
     implementation("androidx.core:core-ktx:1.3.1")
-    natives("com.google.ar:core:1.44.0")
 }
 
 // BUILD TASKS DEFINITION
+val extractNativeLibs by tasks.registering(Copy::class) {
+    val arcoreImplementation = configurations.getByName("arcoreImplementation")
+
+    dependsOn(arcoreImplementation)
+
+    from(arcoreImplementation.map {zipTree(it)})
+    into(arcoreLibpath)
+}
+
+tasks.named("preBuild") {
+    dependsOn(tasks.getByName("extractNativeLibs"))
+}
+
 val cleanAssetsAddons by tasks.registering(Copy::class) {
     delete("src/main/assets/addons")
 }
@@ -164,24 +172,4 @@ tasks.named("assemble").configure {
 tasks.named<Delete>("clean").apply {
     dependsOn(cleanDemoAddons)
     dependsOn(cleanAssetsAddons)
-}
-
-// ARCore NDK requirements
-tasks.register<Copy>("extractNativeLibraries") {
-    outputs.upToDateWhen { false }
-
-    doFirst {
-        configurations.getByName("natives").files.forEach { file ->
-            logger.lifecycle("in config")
-            from(zipTree(file))
-            into(arcore_libpath)
-            include("jni/**/*")
-        }
-    }
-}
-
-tasks.whenTaskAdded {
-    if (name.contains("external", ignoreCase = true) && !name.contains("Clean", ignoreCase = true)) {
-        dependsOn(tasks.named("extractNativeLibraries"))
-    }
 }
