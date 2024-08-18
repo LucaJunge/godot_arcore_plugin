@@ -303,6 +303,10 @@ class ARCorePlugin(godot: Godot): GodotPlugin(godot) {
      *
      * Print a 'Hello World' message to the logcat.
      */
+
     @UsedByGodot
-    private external fun helloWorld()   
+    private external fun initializeWrapper()
+
+    @UsedByGodot
+    private external fun uninitializeWrapper()
 }

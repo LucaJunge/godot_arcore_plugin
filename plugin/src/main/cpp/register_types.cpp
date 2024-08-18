@@ -5,6 +5,9 @@
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/godot.hpp>
 
+#include "ARCoreInterface.h"
+#include <jni.h>
+
 using namespace godot;
 
 void initialize_plugin_module(ModuleInitializationLevel p_level) {
@@ -12,6 +15,10 @@ void initialize_plugin_module(ModuleInitializationLevel p_level) {
     if (p_level != godot::MODULE_INITIALIZATION_LEVEL_SCENE) {
         return;
     }
+
+    // TODO: Clarify if these two lines are the same
+    ClassDB::register_class<ARCoreInterface>();
+    //GDREGISTER_CLASS(ARCoreInterface);
 }
 
 void uninitialize_plugin_module(ModuleInitializationLevel p_level) {
