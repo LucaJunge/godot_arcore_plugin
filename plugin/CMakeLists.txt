@@ -113,22 +113,22 @@ set_target_properties(${GODOT-CPP} PROPERTIES IMPORTED_LOCATION ${GODOT_CPP_STAT
 
 
 ## Setup the plugin library
-file(GLOB_RECURSE ANDROID_SOURCES ${CMAKE_SOURCE_DIR}/src/main/cpp/*.c**)
-file(GLOB_RECURSE ANDROID_HEADERS ${CMAKE_SOURCE_DIR}/src/main/cpp/*.h**)
+file(GLOB_RECURSE ANDROID_SOURCES "${CMAKE_SOURCE_DIR}/src/main/cpp/*.c**")
+file(GLOB_RECURSE ANDROID_HEADERS "${CMAKE_SOURCE_DIR}/src/main/cpp/*.h**")
 
 add_library(${CMAKE_PROJECT_NAME} SHARED
         ${ANDROID_SOURCES} ${ANDROID_HEADERS}
 )
 
 # Specify path to ARCore's native libraries in the build folder
-set(ARCORE_LIB_DIR ${CMAKE_SOURCE_DIR}/build/arcore-native/jni/arm64-v8a)
+set(ARCORE_LIB_DIR "${CMAKE_SOURCE_DIR}/build/arcore-native/jni/arm64-v8a")
 
 # Include ARCore
 add_library(arcore_sdk_c SHARED IMPORTED)
-set_target_properties(arcore_sdk_c PROPERTIES IMPORTED_LOCATION ${ARCORE_LIB_DIR}/libarcore_sdk_c.so)
+set_target_properties(arcore_sdk_c PROPERTIES IMPORTED_LOCATION "${ARCORE_LIB_DIR}/libarcore_sdk_c.so")
 
 add_library(arcore_sdk_jni SHARED IMPORTED)
-set_target_properties(arcore_sdk_jni PROPERTIES IMPORTED_LOCATION ${ARCORE_LIB_DIR}/libarcore_sdk_jni.so)
+set_target_properties(arcore_sdk_jni PROPERTIES IMPORTED_LOCATION "${ARCORE_LIB_DIR}/libarcore_sdk_jni.so")
 
 target_include_directories(${CMAKE_PROJECT_NAME}
         SYSTEM PUBLIC
