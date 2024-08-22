@@ -5,7 +5,7 @@
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/godot.hpp>
 
-#include "ARCoreInterface.h"
+#include "arcore_interface.h"
 #include <jni.h>
 
 using namespace godot;

@@ -9,11 +9,19 @@ func _enter_tree():
 	export_plugin = AndroidExportPlugin.new()
 	add_export_plugin(export_plugin)
 
+	# Add an autoload for the actual interface
+	add_autoload_singleton(
+			"ARCoreInterfaceInstance",
+			"res://addons/ARCorePlugin/ARCoreInterface.gd")
+
 
 func _exit_tree():
 	# Clean-up of the plugin goes here.
 	remove_export_plugin(export_plugin)
 	export_plugin = null
+
+	# TODO: Check if the singleton must be removed
+	# remove_autoload_singleton("ARCorePlugin")
 
 
 class AndroidExportPlugin extends EditorExportPlugin:

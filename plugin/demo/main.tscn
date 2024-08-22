@@ -1,6 +1,20 @@
-[gd_scene load_steps=2 format=3 uid="uid://cg3hylang5fxn"]
+[gd_scene load_steps=3 format=3 uid="uid://cg3hylang5fxn"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_j0gfq"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_rr52s"]
+bg_color = Color(0.2655, 0.317775, 0.45, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(0.206182, 0.248662, 0.360116, 1)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+expand_margin_left = 20.0
+expand_margin_right = 20.0
 
 [node name="Main" type="CenterContainer"]
 anchors_preset = 15
@@ -10,8 +24,10 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_j0gfq")
 
-[node name="Button" type="Button" parent="."]
+[node name="StartARButton" type="Button" parent="."]
 layout_mode = 2
-text = "Hello GDExtension World"
+theme_override_font_sizes/font_size = 60
+theme_override_styles/normal = SubResource("StyleBoxFlat_rr52s")
+text = "Start AR"
 
-[connection signal="pressed" from="Button" to="." method="_on_Button_pressed"]
+[connection signal="pressed" from="StartARButton" to="." method="_on_start_ar_button_pressed"]
