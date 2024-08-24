@@ -274,8 +274,7 @@ void ARCoreInterface::_process() {
     }
 
     ArSession_setDisplayGeometry(m_ar_session, (int32_t)(Orientation::ROTATION_0), m_screen_height, m_screen_width);
-
-    // ArSession_setCameraTextureName(m_ar_session, _background_renderer.getTextureId());
+    //ALOGV("%s", std::to_string(m_screen_height).c_str());
     ArSession_setCameraTextureName(m_ar_session, _get_camera_feed_id());
 
     if (ArSession_update(m_ar_session, m_ar_frame) != AR_SUCCESS) {
@@ -285,16 +284,21 @@ void ARCoreInterface::_process() {
     ArCamera *ar_camera;
     ArFrame_acquireCamera(m_ar_session, m_ar_frame, &ar_camera);
 
-    //glm::mat4 view_mat;
-
     // TODO: Getting the math right here (probably without glm dependency?)
-    // Currently just getting something back from ARCore
+    // Right-handed column major, right?
 
     float view_mat[16];
+
+    // https://developers.google.com/ar/reference/c/group/ar-camera#arcamera_getviewmatrix
     ArCamera_getViewMatrix(m_ar_session, ar_camera, view_mat);
 
-    //m_view = glm_to_godot_transform(view_mat);
-    m_view = Transform3D(view_mat[0], view_mat[1], view_mat[2], view_mat[3], view_mat[4], view_mat[5], view_mat[6], view_mat[7], view_mat[8], view_mat[9], view_mat[10], view_mat[11]);
+    // https://docs.godotengine.org/en/stable/classes/class_transform3d.html
+    m_view = Transform3D(
+            Vector3(view_mat[0], view_mat[4], view_mat[8]),
+            Vector3(view_mat[1], view_mat[5], view_mat[9]),
+            Vector3(view_mat[2], view_mat[6], view_mat[10]),
+            Vector3(view_mat[12], view_mat[13], view_mat[14])
+    );
 
     m_view.invert();
 
@@ -310,14 +314,15 @@ void ARCoreInterface::_process() {
                                 1.0f, 1.0f, 1.0f, 1.0f};
 
     ArCamera_getProjectionMatrix(m_ar_session, ar_camera,
-            /*near=*/0.1f, /*far=*/100.f,
+            /*near=*/1.0f, /*far=*/100.f,
                                  projection_mat);
 
-    // TODO: applying ARCore state correctly for Godot...
-    m_projection[1] = Vector4(projection_mat[0], projection_mat[1], projection_mat[2], projection_mat[3]);
-    m_projection[2] = Vector4(projection_mat[4], projection_mat[5], projection_mat[6], projection_mat[7]);
-    m_projection[3] = Vector4(projection_mat[8], projection_mat[9], projection_mat[10], projection_mat[11]);
-    m_projection[4] = Vector4(projection_mat[12], projection_mat[13], projection_mat[14], projection_mat[15]);
+    // TODO: applying ARCore projection correctly for Godot...
+    // Also column major?
+    m_projection[0] = Vector4(projection_mat[0], projection_mat[4], projection_mat[8], projection_mat[12]);
+    m_projection[1] = Vector4(projection_mat[1], projection_mat[5], projection_mat[9], projection_mat[13]);
+    m_projection[2] = Vector4(projection_mat[2], projection_mat[6], projection_mat[10], projection_mat[14]);
+    m_projection[3] = Vector4(projection_mat[3], projection_mat[7], projection_mat[11], projection_mat[15]);
 
     //m_background_renderer.process(*m_ar_session, *m_ar_frame, m_enable_depth_estimation);
 

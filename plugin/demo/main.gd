@@ -16,6 +16,7 @@ func _ready():
 func _process(delta):
 	# Display the XRCamera position we get from ARCore
 	# print($XROrigin3D.position)
+	print($XROrigin3D/XRCamera3D.fov)
 	$CanvasLayer/Control/VBoxContainer/MarginContainer2/VBoxContainer/CameraPositionLabel.text = "XRCamera3D.position: " + str($XROrigin3D/XRCamera3D.position)
 	$CanvasLayer/Control/VBoxContainer/MarginContainer2/VBoxContainer/TrackingState.text = "Tracking State: " + get_tracking_state()
 
@@ -28,7 +29,6 @@ func _on_start_ar_button_pressed():
 func get_tracking_state() -> String:
 	var status = ARCoreInterfaceInstance.get_tracking_status()
 	
-	print(status)
 	if status == XRInterface.XR_NOT_TRACKING:
 		return "Not Tracking"
 	elif status == XRInterface.XR_NORMAL_TRACKING:
