@@ -14,10 +14,10 @@
 #define JNI_CLASS_NAME ARCorePlugin
 
 extern "C" {
-    JNIEXPORT void JNICALL JNI_METHOD(initializeWrapper)(JNIEnv *env, jobject activity) {
-        ARCoreWrapper::initialize_wrapper(env, activity);
+    JNIEXPORT void JNICALL JNI_METHOD(initializeEnvironment)(JNIEnv *env, jobject activity) {
+        ARCoreWrapper::initialize_environment(env, activity);
     }
-    JNIEXPORT void JNICALL JNI_METHOD(uninitializeWrapper)(JNIEnv *env, jobject) {
-        ARCoreWrapper::uninitialize_wrapper(env);
+    JNIEXPORT void JNICALL JNI_METHOD(uninitializeEnvironment)(JNIEnv *env, jobject) {
+        ARCoreWrapper::uninitialize_environment(env);
     }
 };

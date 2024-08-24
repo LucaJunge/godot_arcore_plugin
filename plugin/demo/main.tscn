@@ -1,4 +1,4 @@
-[gd_scene load_steps=3 format=3 uid="uid://cg3hylang5fxn"]
+[gd_scene load_steps=7 format=3 uid="uid://cg3hylang5fxn"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_j0gfq"]
 
@@ -13,21 +13,166 @@ corner_radius_top_left = 20
 corner_radius_top_right = 20
 corner_radius_bottom_right = 20
 corner_radius_bottom_left = 20
-expand_margin_left = 20.0
-expand_margin_right = 20.0
 
-[node name="Main" type="CenterContainer"]
+[sub_resource type="BoxMesh" id="BoxMesh_4u73l"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_lvyi5"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_vwrey"]
+sky_material = SubResource("ProceduralSkyMaterial_lvyi5")
+
+[sub_resource type="Environment" id="Environment_603g6"]
+background_mode = 2
+sky = SubResource("Sky_vwrey")
+tonemap_mode = 2
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_j0gfq")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Control" type="Control" parent="CanvasLayer"]
+layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_j0gfq")
 
-[node name="StartARButton" type="Button" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer2" type="MarginContainer" parent="CanvasLayer/Control/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 50
+theme_override_constants/margin_top = 50
+theme_override_constants/margin_right = 50
+theme_override_constants/margin_bottom = 50
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control/VBoxContainer/MarginContainer2"]
+layout_mode = 2
+
+[node name="CameraPositionLabel" type="Label" parent="CanvasLayer/Control/VBoxContainer/MarginContainer2/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "XRCamera.position: [0, 0, 0]"
+
+[node name="TrackingState" type="Label" parent="CanvasLayer/Control/VBoxContainer/MarginContainer2/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 30
+text = "Tracking State: Not tracking"
+
+[node name="Spacer" type="Control" parent="CanvasLayer/Control/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/Control/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/margin_left = 60
+theme_override_constants/margin_top = 30
+theme_override_constants/margin_right = 60
+theme_override_constants/margin_bottom = 120
+
+[node name="StartARButton" type="Button" parent="CanvasLayer/Control/VBoxContainer/MarginContainer"]
+custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
 theme_override_font_sizes/font_size = 60
 theme_override_styles/normal = SubResource("StyleBoxFlat_rr52s")
 text = "Start AR"
 
-[connection signal="pressed" from="StartARButton" to="." method="_on_start_ar_button_pressed"]
+[node name="XROrigin3D" type="XROrigin3D" parent="."]
+
+[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D"]
+transform = Transform3D(1, 0, 0, 0, 0.866025, 0.5, 0, -0.5, 0.866025, 0, 2, 4)
+
+[node name="Objects" type="Node3D" parent="XROrigin3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="XROrigin3D/Objects"]
+mesh = SubResource("BoxMesh_4u73l")
+skeleton = NodePath("../../..")
+
+[node name="MeshInstance3D5" type="MeshInstance3D" parent="XROrigin3D/Objects"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.222, 0, 0)
+mesh = SubResource("BoxMesh_4u73l")
+skeleton = NodePath("../../..")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="XROrigin3D/Objects"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.34263, 0, 0)
+mesh = SubResource("BoxMesh_4u73l")
+skeleton = NodePath("../../..")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="XROrigin3D/Objects"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -11.5119)
+mesh = SubResource("BoxMesh_4u73l")
+skeleton = NodePath("../../..")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="XROrigin3D/Objects"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8.65609)
+mesh = SubResource("BoxMesh_4u73l")
+skeleton = NodePath("../../..")
+
+[node name="MeshInstance3D11" type="MeshInstance3D" parent="XROrigin3D/Objects"]
+transform = Transform3D(0.902081, 0, -0.431566, 0, 1, 0, 0.431566, 0, 0.902081, -0.209685, 9.56609, -0.218143)
+mesh = SubResource("BoxMesh_4u73l")
+skeleton = NodePath("../../..")
+
+[node name="MeshInstance3D12" type="MeshInstance3D" parent="XROrigin3D/Objects"]
+transform = Transform3D(0.902081, 0, -0.431566, 0, 1, 0, 0.431566, 0, 0.902081, 9.91349, 9.56609, 4.6249)
+mesh = SubResource("BoxMesh_4u73l")
+skeleton = NodePath("../../..")
+
+[node name="MeshInstance3D13" type="MeshInstance3D" parent="XROrigin3D/Objects"]
+transform = Transform3D(0.902081, 0, -0.431566, 0, 1, 0, 0.431566, 0, 0.902081, -8.6375, 9.56609, -4.25011)
+mesh = SubResource("BoxMesh_4u73l")
+skeleton = NodePath("../../..")
+
+[node name="MeshInstance3D14" type="MeshInstance3D" parent="XROrigin3D/Objects"]
+transform = Transform3D(0.902081, 0, -0.431566, 0, 1, 0, 0.431566, 0, 0.902081, 4.75844, 9.56609, -10.6028)
+mesh = SubResource("BoxMesh_4u73l")
+skeleton = NodePath("../../..")
+
+[node name="MeshInstance3D15" type="MeshInstance3D" parent="XROrigin3D/Objects"]
+transform = Transform3D(0.902081, 0, -0.431566, 0, 1, 0, 0.431566, 0, 0.902081, -3.94536, 9.56609, 7.59036)
+mesh = SubResource("BoxMesh_4u73l")
+skeleton = NodePath("../../..")
+
+[node name="MeshInstance3D6" type="MeshInstance3D" parent="XROrigin3D/Objects"]
+transform = Transform3D(0.853551, 0, 0.52101, 0, 1, 0, -0.52101, 0, 0.853551, 0.352623, -9.75806, 0.112191)
+mesh = SubResource("BoxMesh_4u73l")
+skeleton = NodePath("../../..")
+
+[node name="MeshInstance3D7" type="MeshInstance3D" parent="XROrigin3D/Objects"]
+transform = Transform3D(0.853551, 0, 0.52101, 0, 1, 0, -0.52101, 0, 0.853551, 9.93119, -9.75806, -5.73459)
+mesh = SubResource("BoxMesh_4u73l")
+skeleton = NodePath("../../..")
+
+[node name="MeshInstance3D8" type="MeshInstance3D" parent="XROrigin3D/Objects"]
+transform = Transform3D(0.853551, 0, 0.52101, 0, 1, 0, -0.52101, 0, 0.853551, -7.62179, -9.75806, 4.97979)
+mesh = SubResource("BoxMesh_4u73l")
+skeleton = NodePath("../../..")
+
+[node name="MeshInstance3D9" type="MeshInstance3D" parent="XROrigin3D/Objects"]
+transform = Transform3D(0.853551, 0, 0.52101, 0, 1, 0, -0.52101, 0, 0.853551, -5.64516, -9.75806, -9.71376)
+mesh = SubResource("BoxMesh_4u73l")
+skeleton = NodePath("../../..")
+
+[node name="MeshInstance3D10" type="MeshInstance3D" parent="XROrigin3D/Objects"]
+transform = Transform3D(0.853551, 0, 0.52101, 0, 1, 0, -0.52101, 0, 0.853551, 4.86253, -9.75806, 7.50061)
+mesh = SubResource("BoxMesh_4u73l")
+skeleton = NodePath("../../..")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_603g6")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
+
+[connection signal="pressed" from="CanvasLayer/Control/VBoxContainer/MarginContainer/StartARButton" to="." method="_on_start_ar_button_pressed"]

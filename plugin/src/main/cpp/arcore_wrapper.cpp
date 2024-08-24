@@ -13,15 +13,11 @@ jobject ARCoreWrapper::activity = nullptr;
 jclass ARCoreWrapper::godot_class = nullptr;
 jclass ARCoreWrapper::activity_class = nullptr;
 
-ARCoreWrapper::ARCoreWrapper() {
-    ALOGV("ARCoreWrapper constructor");
-}
+ARCoreWrapper::ARCoreWrapper() { }
 
-ARCoreWrapper::~ARCoreWrapper() {
-    ALOGV("ARCoreWrapper destructor");
-}
+ARCoreWrapper::~ARCoreWrapper() { }
 
-void ARCoreWrapper::initialize_wrapper(JNIEnv *p_env, jobject p_activity) {
+void ARCoreWrapper::initialize_environment(JNIEnv *p_env, jobject p_activity) {
     env = p_env;
 
     activity = p_env->NewGlobalRef(p_activity);
@@ -46,7 +42,7 @@ void ARCoreWrapper::initialize_wrapper(JNIEnv *p_env, jobject p_activity) {
     }
 }
 
-void ARCoreWrapper::uninitialize_wrapper(JNIEnv *env) {
+void ARCoreWrapper::uninitialize_environment(JNIEnv *env) {
     if(arcore_plugin_instance) {
         ALOGV("ARCorePlugin: ARCore instance found.");
         env->DeleteGlobalRef(arcore_plugin_instance);

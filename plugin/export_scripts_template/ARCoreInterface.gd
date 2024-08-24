@@ -20,4 +20,8 @@ func get_interface():
 	return arcore
 
 func start():
-	arcore.start()
+	if arcore.initialize():
+		get_viewport().use_xr = true
+
+func get_tracking_status():
+	return arcore.get_tracking_status()

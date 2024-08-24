@@ -9,8 +9,8 @@
 
 class ARCoreWrapper {
 public:
-    static void initialize_wrapper(JNIEnv *env, jobject activity);
-    static void uninitialize_wrapper(JNIEnv *env);
+    static void initialize_environment(JNIEnv *env, jobject activity);
+    static void uninitialize_environment(JNIEnv *env);
 private:
     static JNIEnv *env;
     static jobject arcore_plugin_instance;

@@ -131,7 +131,7 @@ class ARCorePlugin(godot: Godot): GodotPlugin(godot) {
         }
 
         // Everything set up, create or resume session
-        if(arCoreSupported && arCoreInstalled && cameraPermissionGranted) {
+        /*if(arCoreSupported && arCoreInstalled && cameraPermissionGranted) {
             if (session == null) {
                 session = createSession()
                 session!!.resume()
@@ -140,7 +140,7 @@ class ARCorePlugin(godot: Godot): GodotPlugin(godot) {
                 session!!.resume()
                 surfaceView!!.onResume()
             }
-        }
+        }*/
     }
 
     fun checkCameraPermission(): Boolean {
@@ -297,16 +297,9 @@ class ARCorePlugin(godot: Godot): GodotPlugin(godot) {
 
     override fun getPluginGDExtensionLibrariesPaths() = setOf("res://addons/${BuildConfig.GODOT_PLUGIN_NAME}/plugin.gdextension")
 
-    /**
-     * Example showing how to declare a native method that uses GDExtension C++ bindings and is
-     * exposed to gdscript.
-     *
-     * Print a 'Hello World' message to the logcat.
-     */
+    @UsedByGodot
+    private external fun initializeEnvironment()
 
     @UsedByGodot
-    private external fun initializeWrapper()
-
-    @UsedByGodot
-    private external fun uninitializeWrapper()
+    private external fun uninitializeEnvironment()
 }
