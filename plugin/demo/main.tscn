@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://cg3hylang5fxn"]
+[gd_scene load_steps=10 format=3 uid="uid://cg3hylang5fxn"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_j0gfq"]
 
@@ -14,7 +14,20 @@ corner_radius_top_right = 20
 corner_radius_bottom_right = 20
 corner_radius_bottom_left = 20
 
-[sub_resource type="BoxMesh" id="BoxMesh_4u73l"]
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_x8ygb"]
+albedo_color = Color(0, 0, 1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_wukjl"]
+material = SubResource("StandardMaterial3D_x8ygb")
+size = Vector3(0.4, 0.4, 0.4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_trvgj"]
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_yvi2r"]
+material = SubResource("StandardMaterial3D_trvgj")
+radius = 0.05
+height = 0.1
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_lvyi5"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -90,85 +103,24 @@ text = "Start AR"
 [node name="XROrigin3D" type="XROrigin3D" parent="."]
 current = true
 
+[node name="MeshInstance3D" type="MeshInstance3D" parent="XROrigin3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
+mesh = SubResource("BoxMesh_wukjl")
+
+[node name="Origin" type="MeshInstance3D" parent="XROrigin3D"]
+mesh = SubResource("SphereMesh_yvi2r")
+
+[node name="Label3D" type="Label3D" parent="XROrigin3D/Origin"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.190765, 0)
+pixel_size = 0.0005
+text = "Origin
+↓"
+font_size = 120
+outline_size = 30
+
 [node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.476125)
 fov = 60.0
-
-[node name="Objects" type="Node3D" parent="."]
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Objects"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.121348, -5)
-mesh = SubResource("BoxMesh_4u73l")
-skeleton = NodePath("../..")
-
-[node name="MeshInstance3D5" type="MeshInstance3D" parent="Objects"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.222, 0, 0)
-mesh = SubResource("BoxMesh_4u73l")
-skeleton = NodePath("../..")
-
-[node name="MeshInstance3D4" type="MeshInstance3D" parent="Objects"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.34263, 0, 0)
-mesh = SubResource("BoxMesh_4u73l")
-skeleton = NodePath("../..")
-
-[node name="MeshInstance3D2" type="MeshInstance3D" parent="Objects"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -11.5119)
-mesh = SubResource("BoxMesh_4u73l")
-skeleton = NodePath("../..")
-
-[node name="MeshInstance3D3" type="MeshInstance3D" parent="Objects"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 8.65609)
-mesh = SubResource("BoxMesh_4u73l")
-skeleton = NodePath("../..")
-
-[node name="MeshInstance3D11" type="MeshInstance3D" parent="Objects"]
-transform = Transform3D(0.902081, 0, -0.431566, 0, 1, 0, 0.431566, 0, 0.902081, -0.209685, 9.56609, -0.218143)
-mesh = SubResource("BoxMesh_4u73l")
-skeleton = NodePath("../..")
-
-[node name="MeshInstance3D12" type="MeshInstance3D" parent="Objects"]
-transform = Transform3D(0.902081, 0, -0.431566, 0, 1, 0, 0.431566, 0, 0.902081, 9.91349, 9.56609, 4.6249)
-mesh = SubResource("BoxMesh_4u73l")
-skeleton = NodePath("../..")
-
-[node name="MeshInstance3D13" type="MeshInstance3D" parent="Objects"]
-transform = Transform3D(0.902081, 0, -0.431566, 0, 1, 0, 0.431566, 0, 0.902081, -8.6375, 9.56609, -4.25011)
-mesh = SubResource("BoxMesh_4u73l")
-skeleton = NodePath("../..")
-
-[node name="MeshInstance3D14" type="MeshInstance3D" parent="Objects"]
-transform = Transform3D(0.902081, 0, -0.431566, 0, 1, 0, 0.431566, 0, 0.902081, 4.75844, 9.56609, -10.6028)
-mesh = SubResource("BoxMesh_4u73l")
-skeleton = NodePath("../..")
-
-[node name="MeshInstance3D15" type="MeshInstance3D" parent="Objects"]
-transform = Transform3D(0.902081, 0, -0.431566, 0, 1, 0, 0.431566, 0, 0.902081, -3.94536, 9.56609, 7.59036)
-mesh = SubResource("BoxMesh_4u73l")
-skeleton = NodePath("../..")
-
-[node name="MeshInstance3D6" type="MeshInstance3D" parent="Objects"]
-transform = Transform3D(0.853551, 0, 0.52101, 0, 1, 0, -0.52101, 0, 0.853551, 0.352623, -9.75806, 0.112191)
-mesh = SubResource("BoxMesh_4u73l")
-skeleton = NodePath("../..")
-
-[node name="MeshInstance3D7" type="MeshInstance3D" parent="Objects"]
-transform = Transform3D(0.853551, 0, 0.52101, 0, 1, 0, -0.52101, 0, 0.853551, 9.93119, -9.75806, -5.73459)
-mesh = SubResource("BoxMesh_4u73l")
-skeleton = NodePath("../..")
-
-[node name="MeshInstance3D8" type="MeshInstance3D" parent="Objects"]
-transform = Transform3D(0.853551, 0, 0.52101, 0, 1, 0, -0.52101, 0, 0.853551, -7.62179, -9.75806, 4.97979)
-mesh = SubResource("BoxMesh_4u73l")
-skeleton = NodePath("../..")
-
-[node name="MeshInstance3D9" type="MeshInstance3D" parent="Objects"]
-transform = Transform3D(0.853551, 0, 0.52101, 0, 1, 0, -0.52101, 0, 0.853551, -5.64516, -9.75806, -9.71376)
-mesh = SubResource("BoxMesh_4u73l")
-skeleton = NodePath("../..")
-
-[node name="MeshInstance3D10" type="MeshInstance3D" parent="Objects"]
-transform = Transform3D(0.853551, 0, 0.52101, 0, 1, 0, -0.52101, 0, 0.853551, 4.86253, -9.75806, 7.50061)
-mesh = SubResource("BoxMesh_4u73l")
-skeleton = NodePath("../..")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_603g6")

@@ -274,7 +274,6 @@ void ARCoreInterface::_process() {
     }
 
     ArSession_setDisplayGeometry(m_ar_session, (int32_t)(Orientation::ROTATION_0), m_screen_height, m_screen_width);
-    //ALOGV("%s", std::to_string(m_screen_height).c_str());
     ArSession_setCameraTextureName(m_ar_session, _get_camera_feed_id());
 
     if (ArSession_update(m_ar_session, m_ar_frame) != AR_SUCCESS) {
@@ -293,10 +292,21 @@ void ARCoreInterface::_process() {
     ArCamera_getViewMatrix(m_ar_session, ar_camera, view_mat);
 
     // https://docs.godotengine.org/en/stable/classes/class_transform3d.html
+
+    ALOGV("view_mat = \n"
+          "[ %f, %f, %f, %f ]\n"
+          "[ %f, %f, %f, %f ]\n"
+          "[ %f, %f, %f, %f ]\n"
+          "[ %f, %f, %f, %f ]",
+          view_mat[0], view_mat[1], view_mat[2], view_mat[3],
+          view_mat[4], view_mat[5], view_mat[6], view_mat[7],
+          view_mat[8], view_mat[9], view_mat[10], view_mat[11],
+          view_mat[12], view_mat[13], view_mat[14], view_mat[15]);
+
     m_view = Transform3D(
-            Vector3(view_mat[0], view_mat[4], view_mat[8]),
-            Vector3(view_mat[1], view_mat[5], view_mat[9]),
-            Vector3(view_mat[2], view_mat[6], view_mat[10]),
+            Vector3(view_mat[0], view_mat[1], view_mat[2]),
+            Vector3(view_mat[4], view_mat[5], view_mat[6]),
+            Vector3(view_mat[8], view_mat[9], view_mat[10]),
             Vector3(view_mat[12], view_mat[13], view_mat[14])
     );
 
@@ -307,22 +317,28 @@ void ARCoreInterface::_process() {
         m_head->set_pose("default", m_view, Vector3(), Vector3(), XRPose::XR_TRACKING_CONFIDENCE_HIGH);
     }
 
-    //glm::mat4 projection_mat = glm::mat4(1.0f);
-    float projection_mat[16] = {1.0f, 1.0f, 1.0f, 1.0f,
-                                1.0f, 1.0f, 1.0f, 1.0f,
-                                1.0f, 1.0f, 1.0f, 1.0f,
-                                1.0f, 1.0f, 1.0f, 1.0f};
+    // === Get planes
+    /*ArTrackableList* ar_trackable_list = nullptr;
+    ArTrackableList_create(m_ar_session, &ar_trackable_list);
+    ArFrame_getUpdatedTrackables(m_ar_session, m_ar_frame, AR_TRACKABLE_PLANE, ar_trackable_list);
 
-    ArCamera_getProjectionMatrix(m_ar_session, ar_camera,
-            /*near=*/1.0f, /*far=*/100.f,
-                                 projection_mat);
+    int32_t image_list_size;
+    ArTrackableList_getSize(m_ar_session, ar_trackable_list, &image_list_size);
 
-    // TODO: applying ARCore projection correctly for Godot...
-    // Also column major?
-    m_projection[0] = Vector4(projection_mat[0], projection_mat[4], projection_mat[8], projection_mat[12]);
-    m_projection[1] = Vector4(projection_mat[1], projection_mat[5], projection_mat[9], projection_mat[13]);
-    m_projection[2] = Vector4(projection_mat[2], projection_mat[6], projection_mat[10], projection_mat[14]);
-    m_projection[3] = Vector4(projection_mat[3], projection_mat[7], projection_mat[11], projection_mat[15]);
+    for (int i = 0; i < image_list_size; ++i) {
+        ArTrackable* ar_trackable = nullptr;
+        ArTrackableType trackable_type;
+        ArTrackableList_acquireItem(m_ar_session, ar_trackable_list, i,
+                                    &ar_trackable);
+        ArTrackable_getType(m_ar_session, ar_trackable, &trackable_type);
+        if (trackable_type == AR_TRACKABLE_PLANE) {
+            ArPlane* plane = ArAsPlane(ar_trackable);
+            ALOGV("Trackable %d is a Plane", i);
+        }
+
+        ArTrackable_release(ar_trackable);
+    }*/
+    // ===
 
     //m_background_renderer.process(*m_ar_session, *m_ar_frame, m_enable_depth_estimation);
 
