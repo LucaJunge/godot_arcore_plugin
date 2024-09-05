@@ -6,6 +6,8 @@
 #include <godot_cpp/core/class_db.hpp>
 #include <godot_cpp/variant/utility_functions.hpp>
 #include <godot_cpp/classes/display_server.hpp>
+#include <godot_cpp/templates/vector.hpp>
+#include <godot_cpp/classes/camera_server.hpp>
 #include "utils.h"
 #include "arcore_wrapper.h"
 
@@ -123,6 +125,28 @@ bool ARCoreInterface::_initialize() {
         configureSession();
     }
 
+    // Creating the feed
+    if(m_feed.is_null()) {
+        m_feed.instantiate();
+        //m_feed->set_name("ARCore");
+        m_feed->set_active(true);
+        CameraServer *cs = CameraServer::get_singleton();
+
+        if (cs != nullptr) {
+            cs->add_feed(m_feed);
+        }
+    }
+
+    // Make sure our feed is marked as active if we already have one
+    if (m_feed != nullptr) {
+        m_feed->set_active(true);
+
+        // The size here isn't actually used, ARCore will manage it, but set it just in case
+        // Also this is a YCbCr texture, not RGB, should probably add a format for that some day :)
+        m_feed->set_external(m_screen_width, m_screen_height);
+        //m_camera_texture_id = m_feed->get_texture_tex_id(CameraServer::FEED_YCBCR_IMAGE);
+    }
+
     return is_initialized();
 }
 
@@ -144,6 +168,16 @@ void ARCoreInterface::_uninitialize() {
         if (m_head.is_valid()) {
             xr_server->remove_tracker(m_head);
             m_head.unref();
+        }
+
+        if (m_feed.is_valid()) {
+            m_feed->set_active(false);
+
+            CameraServer *cs = CameraServer::get_singleton();
+            if (cs != nullptr) {
+                cs->remove_feed(m_feed);
+            }
+            m_feed.unref();
         }
 
         m_init_status = NOT_INITIALISED;
@@ -244,11 +278,11 @@ void ARCoreInterface::configureSession() {
     ArConfig* ar_config = nullptr;
     ArConfig_create(m_ar_session, &ar_config);
 
-    ArConfig_setDepthMode(m_ar_session, ar_config, AR_DEPTH_MODE_AUTOMATIC);
+    ArConfig_setDepthMode(m_ar_session, ar_config, AR_DEPTH_MODE_DISABLED);
     ArConfig_setPlaneFindingMode(m_ar_session, ar_config, AR_PLANE_FINDING_MODE_HORIZONTAL);
 
     ERR_FAIL_NULL(ar_config);
-    ERR_FAIL_COND(ArSession_configure(m_ar_session, ar_config) == AR_SUCCESS);
+    ERR_FAIL_COND(ArSession_configure(m_ar_session, ar_config) != AR_SUCCESS);
     ArConfig_destroy(ar_config);
 }
 
@@ -283,26 +317,12 @@ void ARCoreInterface::_process() {
     ArCamera *ar_camera;
     ArFrame_acquireCamera(m_ar_session, m_ar_frame, &ar_camera);
 
-    // TODO: Getting the math right here (probably without glm dependency?)
-    // Right-handed column major, right?
-
     float view_mat[16];
 
     // https://developers.google.com/ar/reference/c/group/ar-camera#arcamera_getviewmatrix
     ArCamera_getViewMatrix(m_ar_session, ar_camera, view_mat);
 
     // https://docs.godotengine.org/en/stable/classes/class_transform3d.html
-
-    ALOGV("view_mat = \n"
-          "[ %f, %f, %f, %f ]\n"
-          "[ %f, %f, %f, %f ]\n"
-          "[ %f, %f, %f, %f ]\n"
-          "[ %f, %f, %f, %f ]",
-          view_mat[0], view_mat[1], view_mat[2], view_mat[3],
-          view_mat[4], view_mat[5], view_mat[6], view_mat[7],
-          view_mat[8], view_mat[9], view_mat[10], view_mat[11],
-          view_mat[12], view_mat[13], view_mat[14], view_mat[15]);
-
     m_view = Transform3D(
             Vector3(view_mat[0], view_mat[1], view_mat[2]),
             Vector3(view_mat[4], view_mat[5], view_mat[6]),
@@ -318,26 +338,43 @@ void ARCoreInterface::_process() {
     }
 
     // === Get planes
-    /*ArTrackableList* ar_trackable_list = nullptr;
+    ArTrackableList* ar_trackable_list = nullptr;
     ArTrackableList_create(m_ar_session, &ar_trackable_list);
     ArFrame_getUpdatedTrackables(m_ar_session, m_ar_frame, AR_TRACKABLE_PLANE, ar_trackable_list);
 
-    int32_t image_list_size;
-    ArTrackableList_getSize(m_ar_session, ar_trackable_list, &image_list_size);
+    int32_t trackable_list_size;
+    ArTrackableList_getSize(m_ar_session, ar_trackable_list, &trackable_list_size);
 
-    for (int i = 0; i < image_list_size; ++i) {
+    // For each tracked plane
+    for (int i = 0; i < trackable_list_size; ++i) {
         ArTrackable* ar_trackable = nullptr;
-        ArTrackableType trackable_type;
+        //ArTrackableType trackable_type;
         ArTrackableList_acquireItem(m_ar_session, ar_trackable_list, i,
                                     &ar_trackable);
-        ArTrackable_getType(m_ar_session, ar_trackable, &trackable_type);
-        if (trackable_type == AR_TRACKABLE_PLANE) {
-            ArPlane* plane = ArAsPlane(ar_trackable);
-            ALOGV("Trackable %d is a Plane", i);
+        // Get the plane
+        ArPlane* plane = ArAsPlane(ar_trackable);
+
+        // How many polygons does the plane have?
+        int32_t polygon_size;
+        ArPlane_getPolygonSize(m_ar_session, plane, &polygon_size);
+        //ALOGV("%i polygons", polygon_size);
+
+        // Create an array to hold the polygons
+        float *polygon_elements = new float[polygon_size];
+
+        // Get the polygon vertices
+        ArPlane_getPolygon(m_ar_session, plane, polygon_elements);
+        //char* result = "";
+        for(int j = 0; j < polygon_size; j++) {
+            // append to result the polygons with their size
+            //result += polygon_elements[j];
+            //ALOGV("%i", polygon_elements[j]);
         }
 
+        // Cleanup
+        delete[] polygon_elements;
         ArTrackable_release(ar_trackable);
-    }*/
+    }
     // ===
 
     //m_background_renderer.process(*m_ar_session, *m_ar_frame, m_enable_depth_estimation);
@@ -369,8 +406,6 @@ void ARCoreInterface::_process() {
 }
 
 void ARCoreInterface::_pause() {
-    godot::UtilityFunctions::print("ARCoreInterface::_pause");
-    ALOGV("ARCoreInterface::_pause");
 }
 
 void ARCoreInterface::_resume() {

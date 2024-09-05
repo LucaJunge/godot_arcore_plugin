@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://cg3hylang5fxn"]
+[gd_scene load_steps=8 format=3 uid="uid://cg3hylang5fxn"]
 
 [ext_resource type="Script" path="res://main.gd" id="1_j0gfq"]
 
@@ -13,6 +13,9 @@ corner_radius_top_left = 20
 corner_radius_top_right = 20
 corner_radius_bottom_right = 20
 corner_radius_bottom_left = 20
+
+[sub_resource type="Environment" id="Environment_0mj3v"]
+background_mode = 5
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_x8ygb"]
 albedo_color = Color(0, 0, 1, 1)
@@ -29,20 +32,12 @@ material = SubResource("StandardMaterial3D_trvgj")
 radius = 0.05
 height = 0.1
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_lvyi5"]
-sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
-ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
-
-[sub_resource type="Sky" id="Sky_vwrey"]
-sky_material = SubResource("ProceduralSkyMaterial_lvyi5")
-
-[sub_resource type="Environment" id="Environment_603g6"]
-background_mode = 2
-sky = SubResource("Sky_vwrey")
-tonemap_mode = 2
-
 [node name="Main" type="Node3D"]
 script = ExtResource("1_j0gfq")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866024, -0.433016, 0.250001, 0, 0.499998, 0.866026, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -103,9 +98,23 @@ text = "Start AR"
 [node name="XROrigin3D" type="XROrigin3D" parent="."]
 current = true
 
+[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1)
+environment = SubResource("Environment_0mj3v")
+current = true
+far = 12.0
+
 [node name="MeshInstance3D" type="MeshInstance3D" parent="XROrigin3D"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1)
 mesh = SubResource("BoxMesh_wukjl")
+
+[node name="Label3D2" type="Label3D" parent="XROrigin3D/MeshInstance3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.309161, 0.0217596)
+pixel_size = 0.0005
+text = "Box
+↓"
+font_size = 120
+outline_size = 30
 
 [node name="Origin" type="MeshInstance3D" parent="XROrigin3D"]
 mesh = SubResource("SphereMesh_yvi2r")
@@ -117,16 +126,5 @@ text = "Origin
 ↓"
 font_size = 120
 outline_size = 30
-
-[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.476125)
-fov = 60.0
-
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_603g6")
-
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
-transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
-shadow_enabled = true
 
 [connection signal="pressed" from="CanvasLayer/Control/VBoxContainer/MarginContainer/StartARButton" to="." method="_on_start_ar_button_pressed"]

@@ -8,6 +8,7 @@
 #include "include/arcore_c_api.h"
 #include <godot_cpp/classes/xr_interface_extension.hpp>
 #include <godot_cpp/classes/xr_positional_tracker.hpp>
+#include <godot_cpp/classes/camera_feed.hpp>
 
 namespace godot {
     class ARCoreInterface : public XRInterfaceExtension {
@@ -58,6 +59,8 @@ namespace godot {
         virtual void _post_draw_viewport(const RID &p_render_target, const Rect2 &p_screen_rect) override;
 
         virtual void _process() override;
+
+        godot::Ref<godot::CameraFeed> m_feed;
 
     private:
         enum class Orientation: int32_t {

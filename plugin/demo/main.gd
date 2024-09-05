@@ -13,7 +13,7 @@ func _ready():
 	else:
 		printerr("Couldn't find plugin " + _plugin_name)
 
-func _process(delta):
+func _process(_delta):
 	# Display the XRCamera position we get from ARCore
 	# print($XROrigin3D.position)
 	# print($XROrigin3D/XRCamera3D.fov)
@@ -25,6 +25,7 @@ func _on_start_ar_button_pressed():
 
 	# This should be named "ARCoreInterface" but there is a name clash with the registered class "ARCoreInterface"
 	ARCoreInterfaceInstance.start()
+	#display_camera_feed()
 
 func get_tracking_state() -> String:
 	var status = ARCoreInterfaceInstance.get_tracking_status()
@@ -39,3 +40,24 @@ func get_tracking_state() -> String:
 	#	return "Not Tracking"
 	#else:
 	#	return "Unknown State"
+
+func display_camera_feed():
+	var feed = CameraServer.get_feed(0)
+	
+	feed.set_active(true)
+	
+	var viewport = SubViewport.new()
+	add_child(viewport)
+	viewport.size = Vector2(640, 480)
+	var cam_texture = CameraTexture.new()
+	cam_texture.camera_feed_id = feed.get_id()
+	
+	var sprite = Sprite2D.new()
+	sprite.texture = cam_texture
+	viewport.add_child(sprite)
+	
+#	feed.camera_feed_updated.connect(_on_CameraFeed_updated)
+
+#func _on_CameraFeed_updated():
+	#var frame = CameraServer.feed_texture.get_data()
+	# Process frame here
