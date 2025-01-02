@@ -1,6 +1,9 @@
 # GDExtension ARCore Plugin
 
+> [!IMPORTANT]  
+> Deveopment of the ARCore plugin continues in [https://github.com/GodotVR/godot_arcore](https://github.com/GodotVR/godot_arcore)
 
+---  
 ## Usage
 **Note:** [Android Studio](https://developer.android.com/studio) is the recommended IDE for 
 developing Godot Android plugins. 
